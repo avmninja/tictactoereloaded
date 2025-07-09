@@ -1,0 +1,29 @@
+{
+  "name": "tictactoe-weapon-collection",
+  "version": "1.0.0",
+  "description": "Epic Tic-Tac-Toe with Marvel vs DC weapon collection gameplay",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:dev": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "keywords": [
+    "tic-tac-toe",
+    "marvel",
+    "dc",
+    "weapons",
+    "game",
+    "react",
+    "typescript",
+    "node.js"
+  ],
+  "author": "Software Architecture AI",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 
