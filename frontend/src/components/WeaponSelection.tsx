@@ -32,7 +32,9 @@ const WeaponSelection: React.FC<WeaponSelectionProps> = ({ gameState, currentPla
 
   if (!currentPlayer) return null;
 
-  const availableWeapons = WEAPONS[currentPlayer.type];
+  const allWeapons = WEAPONS[currentPlayer.type];
+  const availableWeapons = allWeapons.filter(weapon => !currentPlayer.usedWeapons.includes(weapon.id));
+  const usedWeapons = allWeapons.filter(weapon => currentPlayer.usedWeapons.includes(weapon.id));
   const opponent = gameState.players.find(p => p.id !== currentPlayer.id);
 
   const handleWeaponSelect = (weaponId: string) => {
@@ -101,21 +103,31 @@ const WeaponSelection: React.FC<WeaponSelectionProps> = ({ gameState, currentPla
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full p-4 bg-game-bg border border-game-border rounded-lg flex items-center justify-between hover:border-blue-500 transition-colors"
+              disabled={availableWeapons.length === 0}
+              className={`w-full p-4 bg-game-bg border border-game-border rounded-lg flex items-center justify-between transition-colors ${
+                availableWeapons.length === 0 
+                  ? 'opacity-50 cursor-not-allowed' 
+                  : 'hover:border-blue-500 cursor-pointer'
+              }`}
             >
-              <div className="flex items-center space-x-3">
-                {selectedWeaponData ? (
-                  <>
-                    <WeaponImage imageUrl={selectedWeaponData.imageUrl} name={selectedWeaponData.name} />
-                    <span className="text-game-text">{selectedWeaponData.name}</span>
-                  </>
-                ) : (
-                  <>
-                    <Sword className="w-5 h-5 text-gray-400" />
-                    <span className="text-game-text">Select a weapon...</span>
-                  </>
-                )}
-              </div>
+                              <div className="flex items-center space-x-3">
+                  {selectedWeaponData ? (
+                    <>
+                      <WeaponImage imageUrl={selectedWeaponData.imageUrl} name={selectedWeaponData.name} />
+                      <span className="text-game-text">{selectedWeaponData.name}</span>
+                    </>
+                  ) : availableWeapons.length === 0 ? (
+                    <>
+                      <div className="text-red-400">🚫</div>
+                      <span className="text-red-400">No weapons available</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sword className="w-5 h-5 text-gray-400" />
+                      <span className="text-game-text">Select a weapon...</span>
+                    </>
+                  )}
+                </div>
               <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
@@ -125,32 +137,40 @@ const WeaponSelection: React.FC<WeaponSelectionProps> = ({ gameState, currentPla
                 animate={{ opacity: 1, y: 0 }}
                 className="absolute top-full mt-2 w-full bg-game-card border border-game-border rounded-lg shadow-xl z-20 max-h-80 overflow-y-auto"
               >
-                {availableWeapons.map((weapon) => (
-                  <button
-                    key={weapon.id}
-                    onClick={() => handleWeaponSelect(weapon.id)}
-                    className="w-full p-4 hover:bg-game-bg transition-colors border-b border-game-border last:border-b-0 first:rounded-t-lg last:rounded-b-lg"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <WeaponImage imageUrl={weapon.imageUrl} name={weapon.name} />
-                        <div className="text-left">
-                          <div className="font-medium text-game-text">{weapon.name}</div>
-                          <div className="text-sm text-gray-400">{weapon.description}</div>
+                {availableWeapons.length === 0 ? (
+                  <div className="p-4 text-center text-gray-400">
+                    <div className="text-lg">⚔️</div>
+                    <div className="text-sm">No weapons available</div>
+                    <div className="text-xs">All weapons have been used</div>
+                  </div>
+                ) : (
+                  availableWeapons.map((weapon) => (
+                    <button
+                      key={weapon.id}
+                      onClick={() => handleWeaponSelect(weapon.id)}
+                      className="w-full p-4 hover:bg-game-bg transition-colors border-b border-game-border last:border-b-0 first:rounded-t-lg last:rounded-b-lg"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <WeaponImage imageUrl={weapon.imageUrl} name={weapon.name} />
+                          <div className="text-left">
+                            <div className="font-medium text-game-text">{weapon.name}</div>
+                            <div className="text-sm text-gray-400">{weapon.description}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className={`px-2 py-1 rounded text-xs border ${getRarityColor(weapon.rarity)}`}>
+                            {weapon.rarity}
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Star className="w-4 h-4 text-yellow-400" />
+                            <span className="text-sm font-bold">{weapon.power}</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <div className={`px-2 py-1 rounded text-xs border ${getRarityColor(weapon.rarity)}`}>
-                          {weapon.rarity}
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Star className="w-4 h-4 text-yellow-400" />
-                          <span className="text-sm font-bold">{weapon.power}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  ))
+                )}
               </motion.div>
             )}
           </div>
@@ -178,6 +198,32 @@ const WeaponSelection: React.FC<WeaponSelectionProps> = ({ gameState, currentPla
                 </div>
               </div>
               <p className="text-sm text-gray-400">{selectedWeaponData.description}</p>
+            </motion.div>
+          )}
+
+          {/* Used Weapons Display */}
+          {usedWeapons.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mt-6 p-4 bg-game-bg rounded-lg border border-game-border"
+            >
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="text-red-400">🚫</div>
+                <h4 className="font-bold text-game-text">Used Weapons</h4>
+                <span className="text-sm text-gray-400">({usedWeapons.length})</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {usedWeapons.map((weapon) => (
+                  <div key={weapon.id} className="flex items-center space-x-2 p-2 bg-game-card rounded border border-red-400/20">
+                    <WeaponImage imageUrl={weapon.imageUrl} name={weapon.name} size="w-6 h-6" />
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-400 line-through">{weapon.name}</div>
+                      <div className="text-xs text-red-400">Already used</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </motion.div>
           )}
         </motion.div>

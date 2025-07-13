@@ -85,24 +85,47 @@ const GameResultComponent: React.FC<GameResultProps> = ({
             </h2>
 
             <p className="text-xl text-gray-300 mb-6">
-              {isWinner 
-                ? "You've collected 5 weapons and won the ultimate battle!"
-                : `${result.gameWinner?.name} has collected 5 weapons and won!`
-              }
+              {result.gameWinner ? (
+                isWinner 
+                  ? "All weapons exhausted! You won the most rounds!"
+                  : `All weapons exhausted! ${result.gameWinner.name} won the most rounds!`
+              ) : (
+                "All weapons exhausted! It's a tie - both players won the same number of rounds!"
+              )}
             </p>
 
             <div className="bg-game-bg rounded-lg p-6 mb-6">
-              <h3 className="text-lg font-bold mb-4 text-yellow-400">🏆 Final Weapon Collection 🏆</h3>
+              <h3 className="text-lg font-bold mb-4 text-yellow-400">🏆 Final Round Wins 🏆</h3>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="text-center">
+                  <div className="font-bold mb-2">{currentPlayer?.name}</div>
+                  <div className={`text-4xl font-bold ${isWinner ? 'text-green-400' : 'text-red-400'} mb-2`}>
+                    {currentPlayer?.roundWins}
+                  </div>
+                  <div className="text-sm text-gray-400">Round Wins</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-bold mb-2">{result.gameWinner?.id === currentPlayer?.id ? result.loser?.name : result.gameWinner?.name}</div>
+                  <div className={`text-4xl font-bold ${!isWinner ? 'text-green-400' : 'text-red-400'} mb-2`}>
+                    {result.gameWinner?.id === currentPlayer?.id ? result.loser?.roundWins : result.gameWinner?.roundWins}
+                  </div>
+                  <div className="text-sm text-gray-400">Round Wins</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-game-bg rounded-lg p-6 mb-6">
+              <h3 className="text-lg font-bold mb-4 text-purple-400">⚔️ Final Weapon Collections ⚔️</h3>
               <div className="grid grid-cols-2 gap-6">
                 <WeaponCollection 
-                  weapons={result.winner?.weapons || []} 
-                  playerName={result.winner?.name || ''} 
-                  color="text-green-400" 
+                  weapons={currentPlayer?.weapons || []} 
+                  playerName={currentPlayer?.name || ''} 
+                  color="text-blue-400" 
                 />
                 <WeaponCollection 
-                  weapons={result.loser?.weapons || []} 
-                  playerName={result.loser?.name || ''} 
-                  color="text-red-400" 
+                  weapons={result.gameWinner?.id === currentPlayer?.id ? result.loser?.weapons || [] : result.gameWinner?.weapons || []} 
+                  playerName={result.gameWinner?.id === currentPlayer?.id ? result.loser?.name || '' : result.gameWinner?.name || ''} 
+                  color="text-blue-400" 
                 />
               </div>
             </div>
@@ -188,7 +211,27 @@ const GameResultComponent: React.FC<GameResultProps> = ({
             )}
 
             <div className="bg-game-bg rounded-lg p-4 mb-6">
-              <h3 className="text-lg font-bold mb-3">Current Weapon Count</h3>
+              <h3 className="text-lg font-bold mb-3">Current Round Wins</h3>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="text-center">
+                  <div className="font-bold mb-2">{currentPlayer?.name}</div>
+                  <div className="text-2xl font-bold text-blue-400 mb-2">
+                    {currentPlayer?.roundWins}
+                  </div>
+                  <div className="text-sm text-gray-400">Round Wins</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-bold mb-2">{result.winner?.id === currentPlayer?.id ? result.loser?.name : result.winner?.name}</div>
+                  <div className="text-2xl font-bold text-blue-400 mb-2">
+                    {result.winner?.id === currentPlayer?.id ? result.loser?.roundWins : result.winner?.roundWins}
+                  </div>
+                  <div className="text-sm text-gray-400">Round Wins</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-game-bg rounded-lg p-4 mb-6">
+              <h3 className="text-lg font-bold mb-3">Current Weapon Collections</h3>
               <div className="grid grid-cols-2 gap-6">
                 <WeaponCollection 
                   weapons={currentPlayer?.weapons || []} 

@@ -34,6 +34,8 @@ export interface Player {
   selectedWeapon?: Weapon;
   isReady: boolean;
   symbol: string;
+  usedWeapons: string[]; // Track weapon IDs that have been used by this player
+  roundWins: number; // Track number of rounds won by this player
 }
 
 export interface GameBoard {

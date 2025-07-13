@@ -119,6 +119,21 @@ const PlayerStatus: React.FC<PlayerStatusProps> = ({
           </div>
         </div>
 
+        {/* Round Wins Display */}
+        <div className="bg-game-bg rounded-lg p-3 border border-game-border mb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Trophy className="w-4 h-4 text-blue-400" />
+              <span className="text-sm text-gray-400">Round Wins</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <span className="font-bold text-lg text-blue-400">
+                {currentPlayer.roundWins}
+              </span>
+            </div>
+          </div>
+        </div>
+
         <WeaponCollection 
           weapons={currentPlayer.weapons} 
           label="Your Arsenal" 
@@ -163,6 +178,21 @@ const PlayerStatus: React.FC<PlayerStatusProps> = ({
             <div className="flex items-center space-x-2">
               <p className="text-sm text-red-400">Opponent</p>
               {!isMyTurn && <span className="text-xs bg-yellow-500 text-black px-2 py-1 rounded-full">THEIR TURN</span>}
+            </div>
+          </div>
+        </div>
+
+        {/* Round Wins Display */}
+        <div className="bg-game-bg rounded-lg p-3 border border-game-border mb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Trophy className="w-4 h-4 text-red-400" />
+              <span className="text-sm text-gray-400">Round Wins</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <span className="font-bold text-lg text-red-400">
+                {opponent.roundWins}
+              </span>
             </div>
           </div>
         </div>

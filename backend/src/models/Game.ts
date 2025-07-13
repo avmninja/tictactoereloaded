@@ -22,6 +22,8 @@ export interface Player {
   selectedWeapon?: Weapon;
   isReady: boolean;
   symbol: string;
+  usedWeapons: string[]; // Track weapon IDs that have been used by this player
+  roundWins: number; // Track number of rounds won by this player
 }
 
 export interface GameBoard {
@@ -85,7 +87,9 @@ export class Game {
       type,
       weapons: [],
       isReady: false,
-      symbol: type === WeaponType.MARVEL ? '🦸‍♂️' : '🦸‍♀️'
+      symbol: type === WeaponType.MARVEL ? '🦸‍♂️' : '🦸‍♀️',
+      usedWeapons: [],
+      roundWins: 0
     };
 
     this.players.push(player);
@@ -104,7 +108,7 @@ export class Game {
     }
 
     // Find weapon from player's available weapons (their universe)
-    const availableWeapons = this.getAvailableWeapons(player.type);
+    const availableWeapons = this.getAvailableWeapons(player.type, player);
     const weapon = availableWeapons.find(w => w.id === weaponId);
     
     if (!weapon) {
@@ -122,9 +126,11 @@ export class Game {
     return true;
   }
 
-  private getAvailableWeapons(type: WeaponType): Weapon[] {
+  private getAvailableWeapons(type: WeaponType, player: Player): Weapon[] {
     // Use the imported weapon arrays
-    return type === WeaponType.MARVEL ? marvelWeapons : dcWeapons;
+    const allWeapons = type === WeaponType.MARVEL ? marvelWeapons : dcWeapons;
+    // Filter out weapons that have already been used by this player
+    return allWeapons.filter(weapon => !player.usedWeapons.includes(weapon.id));
   }
 
   private startRound(): void {
@@ -258,6 +264,11 @@ export class Game {
     let isGameOver = false;
     let gameWinner: Player | undefined;
 
+    // Increment round wins for the winner
+    if (winner) {
+      winner.roundWins++;
+    }
+
     // Transfer weapon if there's a winner
     if (winner && loser && loser.selectedWeapon) {
       transferredWeapon = loser.selectedWeapon;
@@ -274,14 +285,9 @@ export class Game {
       
       // Add to winner
       winner.weapons.push(transferredWeapon);
-      
-      // Check if game is over (winner has 5 weapons)
-      if (winner.weapons.length >= 5) {
-        isGameOver = true;
-        gameWinner = winner;
-        this.state = GameState.GAME_OVER;
-      }
     }
+
+    // Game over check will happen in nextRound() after weapons are marked as used
 
     this.lastResult = {
       winner,
@@ -299,11 +305,43 @@ export class Game {
       return;
     }
 
-    // Reset player ready states
+    // Add selected weapons to used weapons list before clearing
     this.players.forEach(player => {
+      if (player.selectedWeapon) {
+        player.usedWeapons.push(player.selectedWeapon.id);
+      }
       player.isReady = false;
       player.selectedWeapon = undefined;
     });
+
+    // Check if all weapons are exhausted (both players have used all their weapons)
+    const allWeaponsUsed = this.players.every(player => {
+      const totalWeapons = player.type === WeaponType.MARVEL ? 5 : 5; // Both Marvel and DC have 5 weapons
+      return player.usedWeapons.length >= totalWeapons;
+    });
+
+    if (allWeaponsUsed) {
+      // Determine winner based on round wins
+      let gameWinner: Player | undefined;
+      if (this.players[0].roundWins > this.players[1].roundWins) {
+        gameWinner = this.players[0];
+      } else if (this.players[1].roundWins > this.players[0].roundWins) {
+        gameWinner = this.players[1];
+      } else {
+        // It's a tie - no clear winner
+        gameWinner = undefined;
+      }
+      
+      // Update the last result to indicate game over
+      this.lastResult = {
+        ...this.lastResult!,
+        isGameOver: true,
+        gameWinner
+      };
+      
+      this.state = GameState.GAME_OVER;
+      return;
+    }
 
     this.roundNumber++;
     this.state = GameState.WEAPON_SELECTION;

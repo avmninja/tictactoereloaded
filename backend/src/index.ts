@@ -116,6 +116,13 @@ io.on('connection', (socket) => {
     }
 
     game.nextRound();
+    
+    // Check if game is over after calling nextRound
+    if (game.state === GameState.GAME_OVER) {
+      const result = game.getGameResult();
+      io.to(gameId).emit('round-ended', result);
+    }
+    
     io.to(gameId).emit('game-updated', game.getState());
   });
 

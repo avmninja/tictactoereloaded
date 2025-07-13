@@ -242,6 +242,12 @@ function App() {
                       <div>Turn: {isMyTurn() ? 'Your turn' : 'Opponent\'s turn'}</div>
                       <div>State: {gameState.state}</div>
                     </div>
+                    <div className="mt-4 p-3 bg-game-bg rounded border border-game-border">
+                      <h4 className="font-bold text-yellow-400 mb-2">🏆 Victory Condition</h4>
+                      <p className="text-xs text-gray-400">
+                        Win the most rounds after all weapons are exhausted!
+                      </p>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -298,11 +304,11 @@ function App() {
                       </h2>
 
                       <p className="text-xl text-gray-300 mb-6">
-                        The battle has ended! Check the weapon collections below.
+                        All weapons have been exhausted! The battle ended based on round wins.
                       </p>
 
                       <div className="bg-game-bg rounded-lg p-6 mb-6">
-                        <h3 className="text-lg font-bold mb-4 text-yellow-400">🏆 Final Weapon Collections 🏆</h3>
+                        <h3 className="text-lg font-bold mb-4 text-yellow-400">🏆 Final Round Wins 🏆</h3>
                         <div className="grid grid-cols-2 gap-6">
                           {gameState.players.map((player, index) => (
                             <div key={player.id} className="text-center">
@@ -310,7 +316,25 @@ function App() {
                                 <div className="text-2xl">{player.symbol}</div>
                                 <div className="font-bold">{player.name}</div>
                               </div>
-                              <div className={`text-2xl font-bold mb-2 ${player.id === currentPlayer?.id ? 'text-green-400' : 'text-red-400'}`}>
+                              <div className={`text-4xl font-bold mb-2 ${player.id === currentPlayer?.id ? 'text-green-400' : 'text-red-400'}`}>
+                                {player.roundWins}
+                              </div>
+                              <div className="text-sm text-gray-400">Round Wins</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="bg-game-bg rounded-lg p-6 mb-6">
+                        <h3 className="text-lg font-bold mb-4 text-purple-400">⚔️ Final Weapon Collections ⚔️</h3>
+                        <div className="grid grid-cols-2 gap-6">
+                          {gameState.players.map((player, index) => (
+                            <div key={player.id} className="text-center">
+                              <div className="flex items-center justify-center space-x-2 mb-2">
+                                <div className="text-2xl">{player.symbol}</div>
+                                <div className="font-bold">{player.name}</div>
+                              </div>
+                              <div className={`text-2xl font-bold mb-2 ${player.id === currentPlayer?.id ? 'text-blue-400' : 'text-blue-400'}`}>
                                 {player.weapons.length}/5 weapons
                               </div>
                               {player.weapons.length > 0 && (
