@@ -2,7 +2,7 @@
   "name": "tictactoe-frontend",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://yourusername.github.io/tictactoereloaded",
+  "homepage": "https://avmninja.github.io/tictactoereloaded",
   "dependencies": {
     "@types/node": "^20.10.4",
     "@types/react": "^18.2.45",
