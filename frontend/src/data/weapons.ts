@@ -1,16 +1,4 @@
-export enum WeaponType {
-  MARVEL = 'marvel',
-  DC = 'dc'
-}
-
-export interface Weapon {
-  id: string;
-  name: string;
-  universe: 'Marvel' | 'DC';
-  power: number;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
-  imageUrl: string;
-}
+import { WeaponType, Weapon } from '../types';
 
 export const marvelWeapons: Weapon[] = [
   {

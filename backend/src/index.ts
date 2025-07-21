@@ -23,12 +23,104 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Routes
+app.get('/', (req, res) => {
+  const frontendUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://your-domain.com' 
+    : `http://${req.get('host')?.replace(':3001', ':3000') || 'localhost:3000'}`;
+  
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Tic-Tac-Toe Reloaded - Backend Server</title>
+      <style>
+        body { 
+          font-family: Arial, sans-serif; 
+          max-width: 600px; 
+          margin: 50px auto; 
+          padding: 20px; 
+          background: #1a1a2e;
+          color: #ffffff;
+          text-align: center;
+        }
+        .container { 
+          background: #16213e; 
+          padding: 30px; 
+          border-radius: 10px; 
+          border: 1px solid #0f3460;
+        }
+        .logo { font-size: 2em; margin-bottom: 20px; }
+        .button { 
+          display: inline-block; 
+          background: linear-gradient(45deg, #e53e3e, #3182ce); 
+          color: white; 
+          padding: 15px 30px; 
+          text-decoration: none; 
+          border-radius: 8px; 
+          margin: 10px;
+          font-weight: bold;
+          transition: transform 0.2s;
+        }
+        .button:hover { transform: scale(1.05); }
+        .info { margin: 20px 0; color: #a0aec0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="logo">⚔️ TIC-TAC-TOE RELOADED 🛡️</div>
+        <h2>Backend Server is Running!</h2>
+        <p class="info">This is the backend server. To play the game, visit the frontend:</p>
+        <a href="${frontendUrl}" class="button">🎮 Play Game</a>
+        <p class="info">
+          <strong>For friends joining:</strong><br>
+          Share this link: <a href="${frontendUrl}" style="color: #4299e1;">${frontendUrl}</a>
+        </p>
+        <div style="margin-top: 30px; font-size: 0.9em; color: #718096;">
+          <p>🎯 3 Game Modes Available:</p>
+          <p>• Play with Computer (AI)</p>
+          <p>• 2 Player Same Screen</p>
+          <p>• Play with Friend (Online)</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `);
+});
+
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    activeGames: games.size,
+    connectedPlayers: io.sockets.sockets.size
+  });
+});
+
 // Game storage (in production, use Redis or database)
 const games = new Map<string, Game>();
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
   console.log(`Player connected: ${socket.id}`);
+
+  // Get available universes for joining
+  socket.on('get-available-universes', () => {
+    // Find existing game with space
+    let game = Array.from(games.values()).find(g => g.players.length < 2);
+    
+    if (!game || game.players.length === 0) {
+      // No game or empty game - both universes available
+      socket.emit('available-universes', { universes: [WeaponType.MARVEL, WeaponType.DC] });
+    } else {
+      // Game has one player - only opposite universe available
+      const takenUniverse = game.players[0].type;
+      const availableUniverse = takenUniverse === WeaponType.MARVEL ? WeaponType.DC : WeaponType.MARVEL;
+      socket.emit('available-universes', { universes: [availableUniverse] });
+    }
+  });
 
   // Join or create game
   socket.on('join-game', (data: { playerName: string, weaponType: WeaponType }) => {
@@ -44,9 +136,9 @@ io.on('connection', (socket) => {
     }
 
     // Add player to game
-    const success = game.addPlayer(socket.id, playerName, weaponType);
+    const result = game.addPlayer(socket.id, playerName, weaponType);
     
-    if (success) {
+    if (result.success) {
       socket.join(game.id);
       socket.emit('game-joined', {
         gameId: game.id,
@@ -57,7 +149,7 @@ io.on('connection', (socket) => {
       // Notify all players in the game
       io.to(game.id).emit('game-updated', game.getState());
     } else {
-      socket.emit('error', { message: 'Failed to join game' });
+      socket.emit('error', { message: result.error || 'Failed to join game' });
     }
   });
 

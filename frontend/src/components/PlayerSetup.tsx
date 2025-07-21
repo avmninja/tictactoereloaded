@@ -7,12 +7,25 @@ interface PlayerSetupProps {
   onJoinGame: (name: string, type: WeaponType) => void;
   isConnected: boolean;
   error: string;
+  availableUniverses?: WeaponType[]; // For restricting universe selection
 }
 
-const PlayerSetup: React.FC<PlayerSetupProps> = ({ onJoinGame, isConnected, error }) => {
+const PlayerSetup: React.FC<PlayerSetupProps> = ({ onJoinGame, isConnected, error, availableUniverses }) => {
   const [playerName, setPlayerName] = useState('');
   const [selectedType, setSelectedType] = useState<WeaponType | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // If availableUniverses is provided, use it; otherwise allow both
+  const allowedUniverses = availableUniverses || [WeaponType.MARVEL, WeaponType.DC];
+  const isMarvelAllowed = allowedUniverses.includes(WeaponType.MARVEL);
+  const isDCAllowed = allowedUniverses.includes(WeaponType.DC);
+
+  // Auto-select if only one universe is available
+  React.useEffect(() => {
+    if (allowedUniverses.length === 1 && !selectedType) {
+      setSelectedType(allowedUniverses[0]);
+    }
+  }, [allowedUniverses, selectedType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,50 +92,61 @@ const PlayerSetup: React.FC<PlayerSetupProps> = ({ onJoinGame, isConnected, erro
 
           {/* Universe Selection */}
           <div>
-            <label className="block text-sm font-medium text-game-text mb-4">
+            <label className="block text-sm font-medium text-game-text mb-2">
               Choose Your Universe
             </label>
+            {allowedUniverses.length === 1 && (
+              <p className="text-xs text-yellow-400 mb-3">
+                ⚡ The other universe is already taken by another player
+              </p>
+            )}
             <div className="grid grid-cols-2 gap-4">
               {/* Marvel Option */}
               <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setSelectedType(WeaponType.MARVEL)}
+                whileHover={isMarvelAllowed ? { scale: 1.02 } : {}}
+                whileTap={isMarvelAllowed ? { scale: 0.98 } : {}}
+                onClick={() => isMarvelAllowed && setSelectedType(WeaponType.MARVEL)}
                 className={`
-                  cursor-pointer p-4 rounded-lg border-2 transition-all duration-200
+                  ${isMarvelAllowed ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'} 
+                  p-4 rounded-lg border-2 transition-all duration-200
                   ${selectedType === WeaponType.MARVEL 
                     ? 'border-marvel-500 bg-marvel-500/10 shadow-lg' 
-                    : 'border-game-border hover:border-marvel-500/50 bg-game-bg'
+                    : isMarvelAllowed 
+                      ? 'border-game-border hover:border-marvel-500/50 bg-game-bg'
+                      : 'border-gray-600 bg-gray-800'
                   }
                 `}
               >
                 <div className="text-center">
                   <div className="text-3xl mb-2">🦸‍♂️</div>
-                  <div className="font-bold text-marvel-500">MARVEL</div>
+                  <div className={`font-bold ${isMarvelAllowed ? 'text-marvel-500' : 'text-gray-500'}`}>MARVEL</div>
                   <div className="text-xs text-gray-400 mt-1">
-                    Heroes of Earth
+                    {isMarvelAllowed ? 'Heroes of Earth' : 'Already taken'}
                   </div>
                 </div>
               </motion.div>
 
               {/* DC Option */}
               <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setSelectedType(WeaponType.DC)}
+                whileHover={isDCAllowed ? { scale: 1.02 } : {}}
+                whileTap={isDCAllowed ? { scale: 0.98 } : {}}
+                onClick={() => isDCAllowed && setSelectedType(WeaponType.DC)}
                 className={`
-                  cursor-pointer p-4 rounded-lg border-2 transition-all duration-200
+                  ${isDCAllowed ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'} 
+                  p-4 rounded-lg border-2 transition-all duration-200
                   ${selectedType === WeaponType.DC 
                     ? 'border-dc-500 bg-dc-500/10 shadow-lg' 
-                    : 'border-game-border hover:border-dc-500/50 bg-game-bg'
+                    : isDCAllowed 
+                      ? 'border-game-border hover:border-dc-500/50 bg-game-bg'
+                      : 'border-gray-600 bg-gray-800'
                   }
                 `}
               >
                 <div className="text-center">
                   <div className="text-3xl mb-2">🦸‍♀️</div>
-                  <div className="font-bold text-dc-500">DC</div>
+                  <div className={`font-bold ${isDCAllowed ? 'text-dc-500' : 'text-gray-500'}`}>DC</div>
                   <div className="text-xs text-gray-400 mt-1">
-                    Legends of Justice
+                    {isDCAllowed ? 'Legends of Justice' : 'Already taken'}
                   </div>
                 </div>
               </motion.div>
@@ -179,7 +203,7 @@ const PlayerSetup: React.FC<PlayerSetupProps> = ({ onJoinGame, isConnected, erro
         <div className="mt-6 text-center text-xs text-gray-400">
           <p>• Select your universe and weapon each round</p>
           <p>• Winner takes opponent's weapon</p>
-          <p>• First to collect 5 weapons wins!</p>
+          <p>• Win the most rounds after all weapons are exhausted!</p>
         </div>
       </motion.div>
     </div>

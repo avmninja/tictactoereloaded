@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { GameResult, Player } from '../types';
+import { GameResult, Player, GameStateData } from '../types';
 import { Trophy, Sword, Crown, ArrowRight } from 'lucide-react';
 
 interface GameResultProps {
@@ -8,16 +8,28 @@ interface GameResultProps {
   currentPlayer: Player | null;
   onNextRound: () => void;
   isGameOver?: boolean;
+  gameState?: GameStateData;
 }
 
 const GameResultComponent: React.FC<GameResultProps> = ({ 
   result, 
   currentPlayer, 
   onNextRound, 
-  isGameOver = false 
+  isGameOver = false,
+  gameState
 }) => {
-  const isWinner = result.winner?.id === currentPlayer?.id;
-  const isLoser = result.loser?.id === currentPlayer?.id;
+  // For game over, use gameWinner; for round end, use round winner
+  const isWinner = isGameOver 
+    ? result.gameWinner?.id === currentPlayer?.id
+    : result.winner?.id === currentPlayer?.id;
+  const isLoser = isGameOver 
+    ? result.gameWinner?.id !== currentPlayer?.id && result.gameWinner !== undefined
+    : result.loser?.id === currentPlayer?.id;
+  
+  // Get opponent from gameState or result
+  const opponent = gameState 
+    ? gameState.players.find(p => p.id !== currentPlayer?.id)
+    : (result.winner?.id === currentPlayer?.id ? result.loser : result.winner);
 
   const WeaponImage: React.FC<{ imageUrl: string; name: string; size?: string }> = ({ imageUrl, name, size = 'w-8 h-8' }) => (
     <img
@@ -100,14 +112,14 @@ const GameResultComponent: React.FC<GameResultProps> = ({
                 <div className="text-center">
                   <div className="font-bold mb-2">{currentPlayer?.name}</div>
                   <div className={`text-4xl font-bold ${isWinner ? 'text-green-400' : 'text-red-400'} mb-2`}>
-                    {currentPlayer?.roundWins}
+                    {currentPlayer?.roundWins || 0}
                   </div>
                   <div className="text-sm text-gray-400">Round Wins</div>
                 </div>
                 <div className="text-center">
-                  <div className="font-bold mb-2">{result.gameWinner?.id === currentPlayer?.id ? result.loser?.name : result.gameWinner?.name}</div>
+                  <div className="font-bold mb-2">{opponent?.name || 'Opponent'}</div>
                   <div className={`text-4xl font-bold ${!isWinner ? 'text-green-400' : 'text-red-400'} mb-2`}>
-                    {result.gameWinner?.id === currentPlayer?.id ? result.loser?.roundWins : result.gameWinner?.roundWins}
+                    {opponent?.roundWins || 0}
                   </div>
                   <div className="text-sm text-gray-400">Round Wins</div>
                 </div>
@@ -123,8 +135,8 @@ const GameResultComponent: React.FC<GameResultProps> = ({
                   color="text-blue-400" 
                 />
                 <WeaponCollection 
-                  weapons={result.gameWinner?.id === currentPlayer?.id ? result.loser?.weapons || [] : result.gameWinner?.weapons || []} 
-                  playerName={result.gameWinner?.id === currentPlayer?.id ? result.loser?.name || '' : result.gameWinner?.name || ''} 
+                  weapons={opponent?.weapons || []} 
+                  playerName={opponent?.name || 'Opponent'} 
                   color="text-blue-400" 
                 />
               </div>
@@ -216,14 +228,14 @@ const GameResultComponent: React.FC<GameResultProps> = ({
                 <div className="text-center">
                   <div className="font-bold mb-2">{currentPlayer?.name}</div>
                   <div className="text-2xl font-bold text-blue-400 mb-2">
-                    {currentPlayer?.roundWins}
+                    {currentPlayer?.roundWins || 0}
                   </div>
                   <div className="text-sm text-gray-400">Round Wins</div>
                 </div>
                 <div className="text-center">
-                  <div className="font-bold mb-2">{result.winner?.id === currentPlayer?.id ? result.loser?.name : result.winner?.name}</div>
+                  <div className="font-bold mb-2">{opponent?.name || 'Opponent'}</div>
                   <div className="text-2xl font-bold text-blue-400 mb-2">
-                    {result.winner?.id === currentPlayer?.id ? result.loser?.roundWins : result.winner?.roundWins}
+                    {opponent?.roundWins || 0}
                   </div>
                   <div className="text-sm text-gray-400">Round Wins</div>
                 </div>
@@ -239,8 +251,8 @@ const GameResultComponent: React.FC<GameResultProps> = ({
                   color="text-blue-400" 
                 />
                 <WeaponCollection 
-                  weapons={result.winner?.id === currentPlayer?.id ? result.loser?.weapons || [] : result.winner?.weapons || []} 
-                  playerName={result.winner?.id === currentPlayer?.id ? result.loser?.name || '' : result.winner?.name || ''} 
+                  weapons={opponent?.weapons || []} 
+                  playerName={opponent?.name || 'Opponent'} 
                   color="text-blue-400" 
                 />
               </div>

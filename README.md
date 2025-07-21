@@ -16,19 +16,19 @@ This isn't your ordinary tic-tac-toe! In this epic battle:
 
 ## 🗡️ Weapon Arsenal
 
-### Marvel Weapons
-- **Mjolnir** - Thor's enchanted hammer (Power: 95, Legendary)
-- **Captain America's Shield** - Vibranium shield (Power: 85, Epic)
-- **Iron Man's Repulsors** - Arc reactor beams (Power: 80, Epic)
-- **Wolverine's Claws** - Adamantium claws (Power: 90, Epic)
-- **Eye of Agamotto** - Time-manipulating artifact (Power: 100, Legendary)
+### Marvel Weapons 🔴
+- **Mjolnir** ⚡ - Thor's enchanted hammer (Power: 95, Legendary)
+- **Captain America's Shield** 🛡️ - Indestructible vibranium shield (Power: 85, Epic)
+- **Iron Man's Repulsors** 🔥 - Arc reactor energy beams (Power: 88, Epic)
+- **Adamantium Claws** ⚔️ - Wolverine's unbreakable claws (Power: 80, Rare)
+- **Eye of Agamotto** 👁️ - Dr. Strange's time-manipulating artifact (Power: 92, Legendary)
 
-### DC Weapons
-- **Lasso of Truth** - Wonder Woman's lasso (Power: 85, Epic)
-- **Batarangs** - Batman's precision weapons (Power: 75, Rare)
-- **Power Ring** - Green Lantern's ring (Power: 95, Legendary)
-- **Trident of Atlan** - Aquaman's trident (Power: 90, Epic)
-- **Heat Vision** - Superman's laser vision (Power: 100, Legendary)
+### DC Weapons 🔵
+- **Lasso of Truth** 🪢 - Wonder Woman's golden lasso (Power: 90, Legendary)
+- **Batarangs** 🦇 - Batman's precision throwing weapons (Power: 75, Rare)
+- **Green Lantern Ring** 💍 - Willpower-powered cosmic ring (Power: 94, Legendary)
+- **Aquaman's Trident** 🔱 - Trident of Atlan from the seven seas (Power: 87, Epic)
+- **Heat Vision** 👁️‍🗨️ - Superman's concentrated laser vision (Power: 89, Epic)
 
 ## 🎲 How to Play
 

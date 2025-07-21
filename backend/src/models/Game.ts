@@ -76,9 +76,21 @@ export class Game {
     };
   }
 
-  public addPlayer(playerId: string, name: string, type: WeaponType): boolean {
+  public addPlayer(playerId: string, name: string, type: WeaponType): { success: boolean; error?: string } {
     if (this.players.length >= 2) {
-      return false;
+      return { success: false, error: 'Game is full' };
+    }
+
+    // Check if second player is trying to select the same universe as first player
+    if (this.players.length === 1) {
+      const firstPlayerType = this.players[0].type;
+      if (firstPlayerType === type) {
+        const oppositeUniverse = firstPlayerType === WeaponType.MARVEL ? 'DC' : 'Marvel';
+        return { 
+          success: false, 
+          error: `Universe already taken! Please choose ${oppositeUniverse} instead.` 
+        };
+      }
     }
 
     const player: Player = {
@@ -98,7 +110,7 @@ export class Game {
       this.state = GameState.WEAPON_SELECTION;
     }
     
-    return true;
+    return { success: true };
   }
 
   public selectWeapon(playerId: string, weaponId: string): boolean {
@@ -136,7 +148,24 @@ export class Game {
   private startRound(): void {
     this.state = GameState.PLAYING;
     this.board = this.createEmptyBoard();
-    this.currentPlayer = 1;
+    
+    // Alternate starting player each round: Marvel starts odd rounds, DC starts even rounds
+    const marvelPlayerIndex = this.players.findIndex(p => p.type === WeaponType.MARVEL);
+    const dcPlayerIndex = this.players.findIndex(p => p.type === WeaponType.DC);
+    
+    if (marvelPlayerIndex !== -1 && dcPlayerIndex !== -1) {
+      // Both players found, alternate based on round number
+      if (this.roundNumber % 2 === 1) {
+        // Odd rounds: Marvel starts
+        this.currentPlayer = marvelPlayerIndex + 1;
+      } else {
+        // Even rounds: DC starts
+        this.currentPlayer = dcPlayerIndex + 1;
+      }
+    } else {
+      // Fallback to player 1 if something goes wrong
+      this.currentPlayer = 1;
+    }
   }
 
   public makeMove(playerId: string, row: number, col: number): boolean {
@@ -264,38 +293,39 @@ export class Game {
     let isGameOver = false;
     let gameWinner: Player | undefined;
 
-    // Increment round wins for the winner
-    if (winner) {
-      winner.roundWins++;
-    }
-
-    // Transfer weapon if there's a winner
-    if (winner && loser && loser.selectedWeapon) {
-      transferredWeapon = loser.selectedWeapon;
-      
-      // Remove weapon from loser and add to winner
-      const weaponIndex = loser.weapons.findIndex(w => w.id === transferredWeapon!.id);
-      if (weaponIndex === -1) {
-        // If loser doesn't have the weapon in their collection, add it first
-        loser.weapons.push(transferredWeapon);
+    // Only process result if it hasn't been processed yet
+    if (!this.lastResult) {
+      // Increment round wins for the winner (only once per round)
+      if (winner) {
+        winner.roundWins++;
       }
-      
-      // Remove from loser
-      loser.weapons = loser.weapons.filter(w => w.id !== transferredWeapon!.id);
-      
-      // Add to winner
-      winner.weapons.push(transferredWeapon);
+
+      // Transfer weapon if there's a winner
+      if (winner && loser && loser.selectedWeapon) {
+        transferredWeapon = loser.selectedWeapon;
+        
+        // Remove weapon from loser and add to winner
+        const weaponIndex = loser.weapons.findIndex(w => w.id === transferredWeapon!.id);
+        if (weaponIndex === -1) {
+          // If loser doesn't have the weapon in their collection, add it first
+          loser.weapons.push(transferredWeapon);
+        }
+        
+        // Remove from loser
+        loser.weapons = loser.weapons.filter(w => w.id !== transferredWeapon!.id);
+        
+        // Add to winner
+        winner.weapons.push(transferredWeapon);
+      }
+
+      this.lastResult = {
+        winner,
+        loser,
+        transferredWeapon,
+        isGameOver,
+        gameWinner
+      };
     }
-
-    // Game over check will happen in nextRound() after weapons are marked as used
-
-    this.lastResult = {
-      winner,
-      loser,
-      transferredWeapon,
-      isGameOver,
-      gameWinner
-    };
 
     return this.lastResult;
   }
@@ -313,6 +343,9 @@ export class Game {
       player.isReady = false;
       player.selectedWeapon = undefined;
     });
+
+    // Clear the last result for the next round
+    this.lastResult = undefined;
 
     // Check if all weapons are exhausted (both players have used all their weapons)
     const allWeaponsUsed = this.players.every(player => {

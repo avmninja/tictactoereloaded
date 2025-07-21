@@ -7,26 +7,27 @@ interface WeaponSelectionProps {
   gameState: GameStateData;
   currentPlayer: Player | null;
   onSelectWeapon: (weaponId: string) => void;
+  simplified?: boolean; // For local multiplayer mode - only show weapon selection interface
 }
 
 const WEAPONS = {
   [WeaponType.MARVEL]: [
-    { id: 'mjolnir', name: 'Mjolnir', power: 95, rarity: 'legendary', description: "Thor's hammer", imageUrl: 'https://img.icons8.com/color/96/thor-hammer.png' },
-    { id: 'shield', name: "Captain America's Shield", power: 85, rarity: 'epic', description: 'Vibranium shield', imageUrl: 'https://img.icons8.com/color/96/captain-america.png' },
-    { id: 'repulsors', name: "Iron Man Repulsors", power: 88, rarity: 'epic', description: 'Arc reactor beams', imageUrl: 'https://img.icons8.com/color/96/iron-man.png' },
-    { id: 'claws', name: "Adamantium Claws", power: 80, rarity: 'rare', description: 'Wolverine claws', imageUrl: 'https://img.icons8.com/color/96/wolverine.png' },
-    { id: 'agamotto', name: 'Eye of Agamotto', power: 92, rarity: 'legendary', description: 'Time artifact', imageUrl: 'https://img.icons8.com/color/96/magic-portal.png' },
+    { id: 'mjolnir', name: 'Mjolnir', power: 95, rarity: 'legendary', description: "Thor's hammer", imageUrl: 'https://img.icons8.com/plasticine/100/thor-hammer.png' },
+    { id: 'shield', name: "Captain America's Shield", power: 85, rarity: 'epic', description: 'Vibranium shield', imageUrl: 'https://img.icons8.com/fluency/96/captain-america-shield.png' },
+    { id: 'repulsors', name: "Iron Man Repulsors", power: 88, rarity: 'epic', description: 'Arc reactor beams', imageUrl: 'https://img.icons8.com/fluency/96/iron-man-head.png' },
+    { id: 'claws', name: "Adamantium Claws", power: 80, rarity: 'rare', description: 'Wolverine claws', imageUrl: 'https://img.icons8.com/emoji/96/crossed-swords.png' },
+    { id: 'agamotto', name: 'Eye of Agamotto', power: 92, rarity: 'legendary', description: 'Time artifact', imageUrl: 'https://img.icons8.com/emoji/96/eye.png' },
   ],
   [WeaponType.DC]: [
-    { id: 'lasso', name: 'Lasso of Truth', power: 90, rarity: 'legendary', description: "Wonder Woman's lasso", imageUrl: 'https://img.icons8.com/color/96/wonder-woman.png' },
-    { id: 'batarangs', name: 'Batarangs', power: 75, rarity: 'rare', description: "Batman's weapons", imageUrl: 'https://img.icons8.com/color/96/batman.png' },
-    { id: 'ring', name: 'Green Lantern Ring', power: 94, rarity: 'legendary', description: "Green Lantern's ring", imageUrl: 'https://img.icons8.com/color/96/green-lantern.png' },
-    { id: 'trident', name: "Aquaman's Trident", power: 87, rarity: 'epic', description: "Aquaman's trident", imageUrl: 'https://img.icons8.com/color/96/aquaman.png' },
-    { id: 'heat_vision', name: 'Heat Vision', power: 89, rarity: 'epic', description: "Superman's vision", imageUrl: 'https://img.icons8.com/color/96/superman.png' },
+    { id: 'lasso', name: 'Lasso of Truth', power: 90, rarity: 'legendary', description: "Wonder Woman's lasso", imageUrl: 'https://img.icons8.com/emoji/96/coiled-rope.png' },
+    { id: 'batarangs', name: 'Batarangs', power: 75, rarity: 'rare', description: "Batman's weapons", imageUrl: 'https://img.icons8.com/fluency/96/batman-logo.png' },
+    { id: 'ring', name: 'Green Lantern Ring', power: 94, rarity: 'legendary', description: "Green Lantern's ring", imageUrl: 'https://img.icons8.com/fluency/96/rings.png' },
+    { id: 'trident', name: "Aquaman's Trident", power: 87, rarity: 'epic', description: "Aquaman's trident", imageUrl: 'https://img.icons8.com/emoji/96/trident-emblem.png' },
+    { id: 'heat_vision', name: 'Heat Vision', power: 89, rarity: 'epic', description: "Superman's vision", imageUrl: 'https://img.icons8.com/fluency/96/superman-logo.png' },
   ],
 };
 
-const WeaponSelection: React.FC<WeaponSelectionProps> = ({ gameState, currentPlayer, onSelectWeapon }) => {
+const WeaponSelection: React.FC<WeaponSelectionProps> = ({ gameState, currentPlayer, onSelectWeapon, simplified = false }) => {
   const [selectedWeapon, setSelectedWeapon] = useState<string>('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -67,6 +68,119 @@ const WeaponSelection: React.FC<WeaponSelectionProps> = ({ gameState, currentPla
     />
   );
 
+  // Simplified version for local multiplayer
+  if (simplified) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-4"
+      >
+        {/* Weapon Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            disabled={availableWeapons.length === 0}
+            className={`w-full p-4 bg-game-bg border border-game-border rounded-lg flex items-center justify-between transition-colors ${
+              availableWeapons.length === 0 
+                ? 'opacity-50 cursor-not-allowed' 
+                : 'hover:border-blue-500 cursor-pointer'
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              {selectedWeaponData ? (
+                <>
+                  <WeaponImage imageUrl={selectedWeaponData.imageUrl} name={selectedWeaponData.name} />
+                  <span className="text-game-text">{selectedWeaponData.name}</span>
+                </>
+              ) : availableWeapons.length === 0 ? (
+                <>
+                  <div className="text-red-400">🚫</div>
+                  <span className="text-red-400">No weapons available</span>
+                </>
+              ) : (
+                <>
+                  <Sword className="w-5 h-5 text-gray-400" />
+                  <span className="text-game-text">Select a weapon...</span>
+                </>
+              )}
+            </div>
+            <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isDropdownOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute top-full mt-2 w-full bg-game-card border border-game-border rounded-lg shadow-xl z-20 max-h-80 overflow-y-auto"
+            >
+              {availableWeapons.length === 0 ? (
+                <div className="p-4 text-center text-gray-400">
+                  <div className="text-lg">⚔️</div>
+                  <div className="text-sm">No weapons available</div>
+                  <div className="text-xs">All weapons have been used</div>
+                </div>
+              ) : (
+                availableWeapons.map((weapon) => (
+                  <button
+                    key={weapon.id}
+                    onClick={() => handleWeaponSelect(weapon.id)}
+                    className="w-full p-4 hover:bg-game-bg transition-colors border-b border-game-border last:border-b-0 first:rounded-t-lg last:rounded-b-lg"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <WeaponImage imageUrl={weapon.imageUrl} name={weapon.name} />
+                        <div className="text-left">
+                          <div className="font-medium text-game-text">{weapon.name}</div>
+                          <div className="text-sm text-gray-400">{weapon.description}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className={`px-2 py-1 rounded text-xs border ${getRarityColor(weapon.rarity)}`}>
+                          {weapon.rarity}
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Star className="w-4 h-4 text-yellow-400" />
+                          <span className="text-sm font-bold">{weapon.power}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                ))
+              )}
+            </motion.div>
+          )}
+        </div>
+
+        {/* Selected Weapon Display */}
+        {selectedWeaponData && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-3 bg-game-bg rounded-lg border border-game-border"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-3">
+                <WeaponImage imageUrl={selectedWeaponData.imageUrl} name={selectedWeaponData.name} />
+                <h4 className="font-bold text-game-text">{selectedWeaponData.name}</h4>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className={`px-2 py-1 rounded text-xs border ${getRarityColor(selectedWeaponData.rarity)}`}>
+                  {selectedWeaponData.rarity}
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Star className="w-4 h-4 text-yellow-400" />
+                  <span className="font-bold">{selectedWeaponData.power}</span>
+                </div>
+              </div>
+            </div>
+            <p className="text-sm text-gray-400">{selectedWeaponData.description}</p>
+          </motion.div>
+        )}
+      </motion.div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
       <motion.div
@@ -77,9 +191,18 @@ const WeaponSelection: React.FC<WeaponSelectionProps> = ({ gameState, currentPla
         <h2 className="text-3xl font-hero font-bold text-glow mb-2">
           Choose Your Weapon
         </h2>
-        <p className="text-gray-400">
+        <p className="text-gray-400 mb-3">
           Round {gameState.roundNumber} - Select your weapon for this battle
         </p>
+        <div className="flex items-center justify-center space-x-2">
+          <span className={`text-sm px-3 py-1 rounded-full ${
+            gameState.roundNumber % 2 === 1 
+              ? 'bg-marvel-500/20 text-marvel-400 border border-marvel-500/30' 
+              : 'bg-dc-500/20 text-dc-400 border border-dc-500/30'
+          }`}>
+            {gameState.roundNumber % 2 === 1 ? '🦸‍♂️ Marvel starts this round' : '🦸‍♀️ DC starts this round'}
+          </span>
+        </div>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -110,24 +233,24 @@ const WeaponSelection: React.FC<WeaponSelectionProps> = ({ gameState, currentPla
                   : 'hover:border-blue-500 cursor-pointer'
               }`}
             >
-                              <div className="flex items-center space-x-3">
-                  {selectedWeaponData ? (
-                    <>
-                      <WeaponImage imageUrl={selectedWeaponData.imageUrl} name={selectedWeaponData.name} />
-                      <span className="text-game-text">{selectedWeaponData.name}</span>
-                    </>
-                  ) : availableWeapons.length === 0 ? (
-                    <>
-                      <div className="text-red-400">🚫</div>
-                      <span className="text-red-400">No weapons available</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sword className="w-5 h-5 text-gray-400" />
-                      <span className="text-game-text">Select a weapon...</span>
-                    </>
-                  )}
-                </div>
+              <div className="flex items-center space-x-3">
+                {selectedWeaponData ? (
+                  <>
+                    <WeaponImage imageUrl={selectedWeaponData.imageUrl} name={selectedWeaponData.name} />
+                    <span className="text-game-text">{selectedWeaponData.name}</span>
+                  </>
+                ) : availableWeapons.length === 0 ? (
+                  <>
+                    <div className="text-red-400">🚫</div>
+                    <span className="text-red-400">No weapons available</span>
+                  </>
+                ) : (
+                  <>
+                    <Sword className="w-5 h-5 text-gray-400" />
+                    <span className="text-game-text">Select a weapon...</span>
+                  </>
+                )}
+              </div>
               <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
