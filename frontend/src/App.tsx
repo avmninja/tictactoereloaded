@@ -38,6 +38,10 @@ function App() {
   const [error, setError] = useState<string>('');
   const [isConnected, setIsConnected] = useState(false);
   const [availableUniverses, setAvailableUniverses] = useState<WeaponType[]>([WeaponType.MARVEL, WeaponType.DC]);
+  
+  // Local multiplayer state
+  const [localPlayerStep, setLocalPlayerStep] = useState<1 | 2>(1);
+  const [player1Data, setPlayer1Data] = useState<{name: string, type: WeaponType} | null>(null);
 
   useEffect(() => {
     // Only initialize socket for online multiplayer mode
@@ -113,6 +117,8 @@ function App() {
     setGameResult(null);
     setError('');
     setAvailableUniverses([WeaponType.MARVEL, WeaponType.DC]);
+    setLocalPlayerStep(1);
+    setPlayer1Data(null);
     if (socket) {
       socket.close();
       setSocket(null);
@@ -121,6 +127,33 @@ function App() {
   };
 
   const joinGame = (name: string, type: WeaponType) => {
+    if (selectedGameMode === GameMode.LOCAL_MULTIPLAYER) {
+      if (localPlayerStep === 1) {
+        // Store player 1 data and move to player 2 setup
+        setPlayer1Data({ name, type });
+        setLocalPlayerStep(2);
+        return;
+      } else {
+        // Player 2 setup complete, create the game
+        const gameMode = 'local_multiplayer';
+        const manager = new LocalGameManager(
+          gameMode,
+          player1Data!.name,
+          player1Data!.type,
+          (gameState) => setGameState(gameState),
+          (result) => setGameResult(result),
+          'AI Opponent',
+          name // Pass player 2 name
+        );
+        
+        setLocalGameManager(manager);
+        setPlayerName(player1Data!.name);
+        setPlayerType(player1Data!.type);
+        setPlayerId('player1');
+        return;
+      }
+    }
+    
     setPlayerName(name);
     setPlayerType(type);
     
@@ -130,8 +163,8 @@ function App() {
         socket.emit('join-game', { playerName: name, weaponType: type });
       }
     } else {
-      // Local game modes (single player or local multiplayer)
-      const gameMode = selectedGameMode === GameMode.SINGLE_PLAYER ? 'single_player' : 'local_multiplayer';
+      // Single player mode
+      const gameMode = 'single_player';
       const manager = new LocalGameManager(
         gameMode,
         name,
@@ -244,14 +277,81 @@ function App() {
     
     // Show player setup if no game state yet
     if (!gameState) {
-      return (
-        <PlayerSetup 
-          onJoinGame={joinGame}
-          isConnected={selectedGameMode === GameMode.ONLINE_MULTIPLAYER ? isConnected : true}
-          error={error}
-          availableUniverses={selectedGameMode === GameMode.ONLINE_MULTIPLAYER ? availableUniverses : undefined}
-        />
-      );
+      // For local multiplayer, show appropriate step
+      if (selectedGameMode === GameMode.LOCAL_MULTIPLAYER) {
+        if (localPlayerStep === 1) {
+          return (
+            <div className="min-h-screen bg-game-bg bg-game-pattern flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="bg-game-card rounded-2xl p-8 border border-game-border shadow-2xl max-w-md w-full"
+              >
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-hero font-bold text-game-text mb-2">Player 1 Setup</h2>
+                  <p className="text-gray-400 text-sm">First player, enter your details</p>
+                </div>
+                <PlayerSetup 
+                  onJoinGame={joinGame}
+                  isConnected={true}
+                  error={error}
+                />
+              </motion.div>
+            </div>
+          );
+        } else {
+          // Player 2 setup
+          const player2Type = player1Data!.type === WeaponType.MARVEL ? WeaponType.DC : WeaponType.MARVEL;
+          return (
+            <div className="min-h-screen bg-game-bg bg-game-pattern flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="bg-game-card rounded-2xl p-8 border border-game-border shadow-2xl max-w-md w-full"
+              >
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-hero font-bold text-game-text mb-2">Player 2 Setup</h2>
+                  <p className="text-gray-400 text-sm">
+                    Second player, enter your hero name
+                  </p>
+                  <div className="mt-4 p-3 bg-game-bg rounded-lg border border-game-border">
+                    <p className="text-sm text-gray-300">
+                      <span className="text-blue-400 font-semibold">{player1Data!.name}</span> chose{' '}
+                      <span className={player1Data!.type === WeaponType.MARVEL ? 'text-marvel-500' : 'text-dc-500'}>
+                        {player1Data!.type.toUpperCase()}
+                      </span>
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      You will play as{' '}
+                      <span className={player2Type === WeaponType.MARVEL ? 'text-marvel-500' : 'text-dc-500'}>
+                        {player2Type.toUpperCase()}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <PlayerSetup 
+                  onJoinGame={joinGame}
+                  isConnected={true}
+                  error={error}
+                  availableUniverses={[player2Type]}
+                />
+              </motion.div>
+            </div>
+          );
+        }
+      } else {
+        // Single player or online multiplayer
+        return (
+          <PlayerSetup 
+            onJoinGame={joinGame}
+            isConnected={selectedGameMode === GameMode.ONLINE_MULTIPLAYER ? isConnected : true}
+            error={error}
+            availableUniverses={selectedGameMode === GameMode.ONLINE_MULTIPLAYER ? availableUniverses : undefined}
+          />
+        );
+      }
     }
 
     const currentPlayer = getCurrentPlayer();

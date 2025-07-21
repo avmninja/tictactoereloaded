@@ -14,7 +14,8 @@ export class LocalGameManager {
     playerType: WeaponType,
     onGameStateChange: (state: GameStateData) => void,
     onGameResult: (result: GameResult) => void,
-    aiOpponentName: string = 'AI Opponent'
+    aiOpponentName: string = 'AI Opponent',
+    player2Name?: string
   ) {
     this.onGameStateChange = onGameStateChange;
     this.onGameResult = onGameResult;
@@ -37,7 +38,7 @@ export class LocalGameManager {
         },
         {
           id: 'player2',
-          name: gameMode === 'single_player' ? aiOpponentName : 'Player 2',
+          name: gameMode === 'single_player' ? aiOpponentName : (player2Name || 'Player 2'),
           type: playerType === WeaponType.MARVEL ? WeaponType.DC : WeaponType.MARVEL,
           weapons: [],
           isReady: false,
