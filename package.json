@@ -26,6 +26,8 @@
     "production:build": "NODE_ENV=production npm run build",
     "production:start": "./scripts/start-production.sh",
     "production:stop": "./scripts/stop-production.sh",
+    "github-pages:build": "cd frontend && REACT_APP_STATIC_MODE=true npm run build",
+    "github-pages:deploy": "cd frontend && npm run build && gh-pages -d build",
     "docker:build": "docker build -t tictactoe-game .",
     "docker:run": "docker run -p 3001:3001 -p 3000:3000 tictactoe-game",
     "health:check": "curl -f http://localhost:3001/health || exit 1"

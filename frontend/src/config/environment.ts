@@ -1,7 +1,14 @@
 // Environment Configuration
+import { getBackendUrl, githubPagesConfig, isGitHubPages } from './github-pages';
+
 export const config = {
-  // API Configuration
+  // API Configuration (GitHub Pages aware)
   backendUrl: process.env.REACT_APP_BACKEND_URL || (() => {
+    // Check if we're on GitHub Pages
+    if (isGitHubPages()) {
+      return getBackendUrl();
+    }
+    
     if (process.env.NODE_ENV === 'production') {
       // In production, use the same host with port 3001
       const protocol = window.location.protocol;
@@ -20,12 +27,14 @@ export const config = {
   
   // Feature Flags
   enableAnalytics: process.env.REACT_APP_ENABLE_ANALYTICS === 'true',
-  debugMode: process.env.REACT_APP_DEBUG_MODE === 'true',
-  enableConsoleLogs: process.env.REACT_APP_ENABLE_CONSOLE_LOGS !== 'false',
+  debugMode: githubPagesConfig.debugMode || process.env.REACT_APP_DEBUG_MODE === 'true',
+  enableConsoleLogs: githubPagesConfig.enableConsole || process.env.REACT_APP_ENABLE_CONSOLE_LOGS !== 'false',
 
   // Build Configuration
   isProduction: process.env.NODE_ENV === 'production',
   isDevelopment: process.env.NODE_ENV === 'development',
+  isGitHubPages: isGitHubPages(),
+  staticMode: githubPagesConfig.staticMode,
   
   // Game Configuration
   maxGameRounds: 10,

@@ -81,6 +81,21 @@ curl -I http://localhost:3000
 
 📖 **[Complete Production Guide](PRODUCTION-GUIDE.md)** - Comprehensive deployment documentation
 
+### GitHub Pages Deployment 🌐
+Deploy for free to GitHub Pages! Perfect for static hosting:
+
+```bash
+# Quick GitHub Pages deployment
+npm run github-pages:deploy
+```
+
+📖 **[GitHub Pages Deployment Guide](GITHUB-PAGES-DEPLOYMENT.md)** - Step-by-step GitHub Pages setup
+
+**Available on GitHub Pages:**
+- ✅ Single Player (vs AI)
+- ✅ Local Multiplayer (same device)
+- ❌ Online Multiplayer (requires separate backend)
+
 ### Docker Deployment
 ```bash
 # Build Docker image
