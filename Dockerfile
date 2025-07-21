@@ -4,7 +4,7 @@ FROM node:18-alpine AS frontend-builder
 
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
-RUN npm ci --only=production
+RUN npm ci
 
 COPY frontend/ ./
 RUN npm run build
@@ -14,12 +14,19 @@ FROM node:18-alpine AS backend-builder
 
 WORKDIR /app/backend
 COPY backend/package*.json ./
-RUN npm ci --only=production
+RUN npm ci
 
 COPY backend/ ./
 RUN npm run build
 
-# Stage 3: Production runtime
+# Stage 3: Install production dependencies for runtime
+FROM node:18-alpine AS deps
+
+WORKDIR /app/backend
+COPY backend/package*.json ./
+RUN npm ci --only=production
+
+# Stage 4: Production runtime
 FROM node:18-alpine AS production
 
 # Install dumb-init for proper signal handling
@@ -31,10 +38,10 @@ RUN adduser -S nextjs -u 1001
 
 WORKDIR /app
 
-# Copy backend build and dependencies
+# Copy backend build and production dependencies
 COPY --from=backend-builder --chown=nextjs:nodejs /app/backend/dist ./backend/dist
-COPY --from=backend-builder --chown=nextjs:nodejs /app/backend/node_modules ./backend/node_modules
-COPY --from=backend-builder --chown=nextjs:nodejs /app/backend/package.json ./backend/
+COPY --from=deps --chown=nextjs:nodejs /app/backend/node_modules ./backend/node_modules
+COPY --from=deps --chown=nextjs:nodejs /app/backend/package.json ./backend/
 
 # Copy frontend build
 COPY --from=frontend-builder --chown=nextjs:nodejs /app/frontend/build ./frontend/build
