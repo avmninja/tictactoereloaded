@@ -44,6 +44,119 @@ This isn't your ordinary tic-tac-toe! In this epic battle:
 4. **Collect weapons** - Round winners steal opponent's selected weapon
 5. **Achieve victory** - First player to collect 5 weapons wins!
 
+## 🚀 Production Deployment
+
+### Quick Start (Development)
+```bash
+# Install all dependencies
+npm run install:all
+
+# Start development servers
+npm run dev
+```
+
+### Production Build & Start ✅
+```bash
+# Build for production
+npm run build
+
+# Start production servers
+npm run production:start
+
+# Stop production servers
+npm run production:stop
+
+# Health check
+npm run health:check
+```
+
+### Verification
+```bash
+# Backend health check
+curl http://localhost:3001/health
+
+# Frontend check
+curl -I http://localhost:3000
+```
+
+📖 **[Complete Production Guide](PRODUCTION-GUIDE.md)** - Comprehensive deployment documentation
+
+### Docker Deployment
+```bash
+# Build Docker image
+npm run docker:build
+
+# Run with Docker
+npm run docker:run
+```
+
+### Environment Variables
+
+#### Frontend (.env)
+```bash
+REACT_APP_BACKEND_URL=http://localhost:3001
+NODE_ENV=production
+GENERATE_SOURCEMAP=false
+REACT_APP_VERSION=1.0.0
+```
+
+#### Backend (.env)
+```bash
+NODE_ENV=production
+PORT=3001
+HOST=0.0.0.0
+CORS_ORIGIN=https://your-domain.com
+SOCKET_CORS_ORIGIN=https://your-domain.com
+MAX_ACTIVE_GAMES=100
+GAME_TIMEOUT=300000
+ENABLE_RATE_LIMIT=true
+```
+
+### Manual Deployment Steps
+1. **Build both applications:**
+   ```bash
+   npm run build
+   ```
+
+2. **Set environment variables for production**
+
+3. **Start the backend server:**
+   ```bash
+   cd backend && npm start
+   ```
+
+4. **Serve the frontend build:**
+   ```bash
+   npx serve -s frontend/build -l 3000
+   ```
+
+### Cloud Deployment Options
+
+#### Heroku
+```bash
+# Install Heroku CLI and login
+heroku create your-app-name
+heroku config:set NODE_ENV=production
+git push heroku main
+```
+
+#### Vercel/Netlify (Frontend)
+```bash
+# Build command: npm run build:frontend
+# Output directory: frontend/build
+```
+
+#### Railway/Render (Backend)
+```bash
+# Build command: npm run build:backend
+# Start command: npm run start:backend
+```
+
+### Health Monitoring
+- **Health endpoint**: `GET /health`
+- **API info**: `GET /api/info`
+- **Game stats**: `GET /api/games`
+
 ### Victory Conditions
 - **Round Victory**: 3 in a row on the tic-tac-toe board
 - **Game Victory**: Collect 5 weapons total (your universe + opponent's)

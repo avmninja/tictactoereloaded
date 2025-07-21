@@ -50,6 +50,7 @@ export class Game {
   public roundNumber: number;
   public maxRounds: number;
   public createdAt: Date;
+  public lastActivity: number;
   public lastResult?: GameResult;
   
   constructor(id: string, maxRounds: number = 10) {
@@ -61,6 +62,7 @@ export class Game {
     this.roundNumber = 1;
     this.maxRounds = maxRounds;
     this.createdAt = new Date();
+    this.lastActivity = Date.now();
   }
 
   private createEmptyBoard(): GameBoard {
@@ -105,6 +107,7 @@ export class Game {
     };
 
     this.players.push(player);
+    this.updateLastActivity();
     
     if (this.players.length === 2) {
       this.state = GameState.WEAPON_SELECTION;
@@ -129,6 +132,7 @@ export class Game {
 
     player.selectedWeapon = weapon;
     player.isReady = true;
+    this.updateLastActivity();
 
     // Check if both players are ready
     if (this.players.every(p => p.isReady)) {
@@ -184,6 +188,7 @@ export class Game {
 
     // Make the move
     this.board.cells[row][col] = this.currentPlayer as CellState;
+    this.updateLastActivity();
 
     // Check for winner
     const winner = this.checkWinner();
@@ -394,5 +399,17 @@ export class Game {
       roundNumber: this.roundNumber,
       maxRounds: this.maxRounds
     };
+  }
+
+  public getPlayerCount(): number {
+    return this.players.length;
+  }
+
+  public getLastActivity(): number {
+    return this.lastActivity;
+  }
+
+  public updateLastActivity(): void {
+    this.lastActivity = Date.now();
   }
 } 

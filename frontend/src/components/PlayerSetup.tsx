@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { WeaponType } from '../types';
 import { User, Sword, Shield, Zap } from 'lucide-react';
@@ -16,7 +16,11 @@ const PlayerSetup: React.FC<PlayerSetupProps> = ({ onJoinGame, isConnected, erro
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // If availableUniverses is provided, use it; otherwise allow both
-  const allowedUniverses = availableUniverses || [WeaponType.MARVEL, WeaponType.DC];
+  const allowedUniverses = useMemo(() => 
+    availableUniverses || [WeaponType.MARVEL, WeaponType.DC], 
+    [availableUniverses]
+  );
+  
   const isMarvelAllowed = allowedUniverses.includes(WeaponType.MARVEL);
   const isDCAllowed = allowedUniverses.includes(WeaponType.DC);
 

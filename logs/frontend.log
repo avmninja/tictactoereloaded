@@ -1,0 +1,27 @@
+ INFO  Accepting connections at http://localhost:3000
+ HTTP  7/20/2025 7:51:50 PM ::1 GET /
+ HTTP  7/20/2025 7:51:50 PM ::1 Returned 200 in 6 ms
+ HTTP  7/20/2025 7:52:09 PM ::1 GET /
+ HTTP  7/20/2025 7:52:09 PM ::1 Returned 200 in 2 ms
+ HTTP  7/20/2025 7:52:09 PM ::1 GET /static/js/main.82df6e95.js
+ HTTP  7/20/2025 7:52:09 PM ::1 GET /static/css/main.dcc8ef83.css
+ HTTP  7/20/2025 7:52:09 PM ::1 Returned 200 in 3 ms
+ HTTP  7/20/2025 7:52:09 PM ::1 Returned 200 in 6 ms
+ HTTP  7/20/2025 7:52:09 PM ::1 GET /manifest.json
+ HTTP  7/20/2025 7:52:09 PM ::1 Returned 200 in 0 ms
+ HTTP  7/20/2025 7:52:19 PM ::1 GET /
+ HTTP  7/20/2025 7:52:19 PM ::1 Returned 304 in 1 ms
+ HTTP  7/20/2025 7:52:19 PM ::1 GET /static/js/main.82df6e95.js
+ HTTP  7/20/2025 7:52:19 PM ::1 GET /static/css/main.dcc8ef83.css
+ HTTP  7/20/2025 7:52:19 PM ::1 Returned 304 in 2 ms
+ HTTP  7/20/2025 7:52:19 PM ::1 Returned 304 in 1 ms
+ HTTP  7/20/2025 7:52:19 PM ::1 GET /manifest.json
+ HTTP  7/20/2025 7:52:19 PM ::1 Returned 304 in 1 ms
+ HTTP  7/20/2025 8:03:54 PM 192.168.86.171 GET /ws
+ HTTP  7/20/2025 8:03:54 PM 192.168.86.171 Returned 200 in 2 ms
+ HTTP  7/20/2025 8:03:57 PM 192.168.86.171 GET /ws
+ HTTP  7/20/2025 8:03:57 PM 192.168.86.171 Returned 200 in 2 ms
+ HTTP  7/20/2025 8:04:02 PM 192.168.86.171 GET /ws
+ HTTP  7/20/2025 8:04:02 PM 192.168.86.171 Returned 200 in 1 ms
+ HTTP  7/20/2025 8:04:12 PM 192.168.86.171 GET /ws
+ HTTP  7/20/2025 8:04:12 PM 192.168.86.171 Returned 200 in 2 ms

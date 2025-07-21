@@ -8,23 +8,11 @@ import WeaponSelection from './components/WeaponSelection';
 import GameBoard from './components/GameBoard';
 import GameResultComponent from './components/GameResult';
 import PlayerStatus from './components/PlayerStatus';
+import ErrorBoundary from './components/ErrorBoundary';
 import { LocalGameManager } from './utils/LocalGameManager';
 import { Sword, Shield, Zap, Trophy, ArrowLeft } from 'lucide-react';
+import config, { validateEnvironment } from './config/environment';
 import './App.css';
-
-// Automatically detect the correct backend URL
-const getBackendUrl = () => {
-  if (process.env.REACT_APP_BACKEND_URL) {
-    return process.env.REACT_APP_BACKEND_URL;
-  }
-  
-  // Use the same host as the frontend but port 3001
-  const protocol = window.location.protocol;
-  const hostname = window.location.hostname;
-  return `${protocol}//${hostname}:3001`;
-};
-
-const BACKEND_URL = getBackendUrl();
 
 function App() {
   const [selectedGameMode, setSelectedGameMode] = useState<GameMode | null>(null);
@@ -32,8 +20,6 @@ function App() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [gameState, setGameState] = useState<GameStateData | null>(null);
   const [playerId, setPlayerId] = useState<string>('');
-  const [playerName, setPlayerName] = useState<string>('');
-  const [playerType, setPlayerType] = useState<WeaponType | null>(null);
   const [gameResult, setGameResult] = useState<GameResult | null>(null);
   const [error, setError] = useState<string>('');
   const [isConnected, setIsConnected] = useState(false);
@@ -43,32 +29,43 @@ function App() {
   const [localPlayerStep, setLocalPlayerStep] = useState<1 | 2>(1);
   const [player1Data, setPlayer1Data] = useState<{name: string, type: WeaponType} | null>(null);
 
+  // Initialize environment validation
+  useEffect(() => {
+    validateEnvironment();
+  }, []);
+
   useEffect(() => {
     // Only initialize socket for online multiplayer mode
     if (selectedGameMode === GameMode.ONLINE_MULTIPLAYER) {
-      console.log('🔗 Attempting to connect to backend at:', BACKEND_URL);
-      const newSocket = io(BACKEND_URL, {
-        timeout: 10000,
+      if (config.enableConsoleLogs) {
+        console.log('🔗 Attempting to connect to backend at:', config.backendUrl);
+      }
+      const newSocket = io(config.backendUrl, {
+        timeout: config.socketTimeout,
         forceNew: true
       });
       setSocket(newSocket);
 
       newSocket.on('connect', () => {
         setIsConnected(true);
-        console.log('✅ Connected to server at:', BACKEND_URL);
+        if (config.enableConsoleLogs) {
+          console.log('✅ Connected to server at:', config.backendUrl);
+        }
         // Request available universes for this game
         newSocket.emit('get-available-universes');
       });
 
       newSocket.on('disconnect', () => {
         setIsConnected(false);
-        console.log('❌ Disconnected from server');
+        if (config.enableConsoleLogs) {
+          console.log('❌ Disconnected from server');
+        }
       });
 
       newSocket.on('connect_error', (error) => {
         setIsConnected(false);
         console.error('🚫 Connection error:', error.message);
-        setError(`Connection failed to ${BACKEND_URL}: ${error.message}`);
+        setError(`Connection failed to ${config.backendUrl}: ${error.message}`);
       });
 
       newSocket.on('game-joined', (data) => {
@@ -112,8 +109,6 @@ function App() {
     setLocalGameManager(null);
     setGameState(null);
     setPlayerId('');
-    setPlayerName('');
-    setPlayerType(null);
     setGameResult(null);
     setError('');
     setAvailableUniverses([WeaponType.MARVEL, WeaponType.DC]);
@@ -147,15 +142,10 @@ function App() {
         );
         
         setLocalGameManager(manager);
-        setPlayerName(player1Data!.name);
-        setPlayerType(player1Data!.type);
         setPlayerId('player1');
         return;
       }
     }
-    
-    setPlayerName(name);
-    setPlayerType(type);
     
     if (selectedGameMode === GameMode.ONLINE_MULTIPLAYER) {
       // Online multiplayer mode
@@ -403,7 +393,7 @@ function App() {
                   }
                 </span>
                 <span className="text-xs text-gray-500">
-                  {selectedGameMode === GameMode.ONLINE_MULTIPLAYER ? BACKEND_URL : 'Local Mode'}
+                  {selectedGameMode === GameMode.ONLINE_MULTIPLAYER ? config.backendUrl : 'Local Mode'}
                 </span>
               </div>
             </div>
@@ -807,9 +797,11 @@ function App() {
   };
 
   return (
-    <div className="App">
-      {renderGameContent()}
-    </div>
+    <ErrorBoundary>
+      <div className="App">
+        {renderGameContent()}
+      </div>
+    </ErrorBoundary>
   );
 }
 

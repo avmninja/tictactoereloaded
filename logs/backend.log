@@ -1,0 +1,9 @@
+
+> tictactoe-backend@1.0.0 start
+> node dist/index.js
+
+🚀 Server running on 0.0.0.0:3001
+🎮 Game server ready for epic battles!
+🌍 Environment: production
+📊 Version: 1.0.0
+🔒 Production mode enabled - enhanced security and performance
