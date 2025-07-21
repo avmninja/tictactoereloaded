@@ -7,7 +7,7 @@ export const marvelWeapons: Weapon[] = [
     universe: 'Marvel',
     power: 95,
     rarity: 'legendary',
-    imageUrl: 'https://img.icons8.com/plasticine/100/thor-hammer.png'
+    imageUrl: 'https://img.icons8.com/color/96/thor-hammer.png'
   },
   {
     id: 'shield',
@@ -15,7 +15,7 @@ export const marvelWeapons: Weapon[] = [
     universe: 'Marvel',
     power: 85,
     rarity: 'epic',
-    imageUrl: 'https://img.icons8.com/fluency/96/captain-america-shield.png'
+    imageUrl: 'https://img.icons8.com/color/96/captain-america.png'
   },
   {
     id: 'repulsors',
@@ -23,7 +23,7 @@ export const marvelWeapons: Weapon[] = [
     universe: 'Marvel',
     power: 88,
     rarity: 'epic',
-    imageUrl: 'https://img.icons8.com/fluency/96/iron-man-head.png'
+    imageUrl: 'https://img.icons8.com/color/96/iron-man.png'
   },
   {
     id: 'claws',
@@ -31,7 +31,7 @@ export const marvelWeapons: Weapon[] = [
     universe: 'Marvel',
     power: 80,
     rarity: 'rare',
-    imageUrl: 'https://img.icons8.com/emoji/96/crossed-swords.png'
+    imageUrl: 'https://img.icons8.com/color/96/wolverine.png'
   },
   {
     id: 'agamotto',
@@ -39,7 +39,7 @@ export const marvelWeapons: Weapon[] = [
     universe: 'Marvel',
     power: 92,
     rarity: 'legendary',
-    imageUrl: 'https://img.icons8.com/emoji/96/eye.png'
+    imageUrl: 'https://img.icons8.com/fluency/96/visible.png'
   }
 ];
 
@@ -50,7 +50,7 @@ export const dcWeapons: Weapon[] = [
     universe: 'DC',
     power: 90,
     rarity: 'legendary',
-    imageUrl: 'https://img.icons8.com/emoji/96/coiled-rope.png'
+    imageUrl: 'https://img.icons8.com/color/96/wonder-woman.png'
   },
   {
     id: 'batarangs',
@@ -58,7 +58,7 @@ export const dcWeapons: Weapon[] = [
     universe: 'DC',
     power: 75,
     rarity: 'rare',
-    imageUrl: 'https://img.icons8.com/fluency/96/batman-logo.png'
+    imageUrl: 'https://img.icons8.com/color/96/batman.png'
   },
   {
     id: 'ring',
@@ -66,7 +66,7 @@ export const dcWeapons: Weapon[] = [
     universe: 'DC',
     power: 94,
     rarity: 'legendary',
-    imageUrl: 'https://img.icons8.com/fluency/96/rings.png'
+    imageUrl: 'https://img.icons8.com/color/96/green-lantern.png'
   },
   {
     id: 'trident',
@@ -74,7 +74,7 @@ export const dcWeapons: Weapon[] = [
     universe: 'DC',
     power: 87,
     rarity: 'epic',
-    imageUrl: 'https://img.icons8.com/emoji/96/trident-emblem.png'
+    imageUrl: 'https://img.icons8.com/color/96/aquaman.png'
   },
   {
     id: 'heat_vision',
@@ -82,7 +82,7 @@ export const dcWeapons: Weapon[] = [
     universe: 'DC',
     power: 89,
     rarity: 'epic',
-    imageUrl: 'https://img.icons8.com/fluency/96/superman-logo.png'
+    imageUrl: 'https://img.icons8.com/color/96/superman.png'
   }
 ];
 

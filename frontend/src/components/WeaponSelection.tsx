@@ -12,18 +12,18 @@ interface WeaponSelectionProps {
 
 const WEAPONS = {
   [WeaponType.MARVEL]: [
-    { id: 'mjolnir', name: 'Mjolnir', power: 95, rarity: 'legendary', description: "Thor's hammer", imageUrl: 'https://img.icons8.com/plasticine/100/thor-hammer.png' },
-    { id: 'shield', name: "Captain America's Shield", power: 85, rarity: 'epic', description: 'Vibranium shield', imageUrl: 'https://img.icons8.com/fluency/96/captain-america-shield.png' },
-    { id: 'repulsors', name: "Iron Man Repulsors", power: 88, rarity: 'epic', description: 'Arc reactor beams', imageUrl: 'https://img.icons8.com/fluency/96/iron-man-head.png' },
-    { id: 'claws', name: "Adamantium Claws", power: 80, rarity: 'rare', description: 'Wolverine claws', imageUrl: 'https://img.icons8.com/emoji/96/crossed-swords.png' },
-    { id: 'agamotto', name: 'Eye of Agamotto', power: 92, rarity: 'legendary', description: 'Time artifact', imageUrl: 'https://img.icons8.com/emoji/96/eye.png' },
+    { id: 'mjolnir', name: 'Mjolnir', power: 95, rarity: 'legendary', description: "Thor's hammer", imageUrl: 'https://img.icons8.com/color/96/thor-hammer.png' },
+    { id: 'shield', name: "Captain America's Shield", power: 85, rarity: 'epic', description: 'Vibranium shield', imageUrl: 'https://img.icons8.com/color/96/captain-america.png' },
+    { id: 'repulsors', name: "Iron Man Repulsors", power: 88, rarity: 'epic', description: 'Arc reactor beams', imageUrl: 'https://img.icons8.com/color/96/iron-man.png' },
+    { id: 'claws', name: "Adamantium Claws", power: 80, rarity: 'rare', description: 'Wolverine claws', imageUrl: 'https://img.icons8.com/color/96/wolverine.png' },
+    { id: 'agamotto', name: 'Eye of Agamotto', power: 92, rarity: 'legendary', description: 'Time artifact', imageUrl: 'https://img.icons8.com/fluency/96/visible.png' },
   ],
   [WeaponType.DC]: [
-    { id: 'lasso', name: 'Lasso of Truth', power: 90, rarity: 'legendary', description: "Wonder Woman's lasso", imageUrl: 'https://img.icons8.com/emoji/96/coiled-rope.png' },
-    { id: 'batarangs', name: 'Batarangs', power: 75, rarity: 'rare', description: "Batman's weapons", imageUrl: 'https://img.icons8.com/fluency/96/batman-logo.png' },
-    { id: 'ring', name: 'Green Lantern Ring', power: 94, rarity: 'legendary', description: "Green Lantern's ring", imageUrl: 'https://img.icons8.com/fluency/96/rings.png' },
-    { id: 'trident', name: "Aquaman's Trident", power: 87, rarity: 'epic', description: "Aquaman's trident", imageUrl: 'https://img.icons8.com/emoji/96/trident-emblem.png' },
-    { id: 'heat_vision', name: 'Heat Vision', power: 89, rarity: 'epic', description: "Superman's vision", imageUrl: 'https://img.icons8.com/fluency/96/superman-logo.png' },
+    { id: 'lasso', name: 'Lasso of Truth', power: 90, rarity: 'legendary', description: "Wonder Woman's lasso", imageUrl: 'https://img.icons8.com/color/96/wonder-woman.png' },
+    { id: 'batarangs', name: 'Batarangs', power: 75, rarity: 'rare', description: "Batman's weapons", imageUrl: 'https://img.icons8.com/color/96/batman.png' },
+    { id: 'ring', name: 'Green Lantern Ring', power: 94, rarity: 'legendary', description: "Green Lantern's ring", imageUrl: 'https://img.icons8.com/color/96/green-lantern.png' },
+    { id: 'trident', name: "Aquaman's Trident", power: 87, rarity: 'epic', description: "Aquaman's trident", imageUrl: 'https://img.icons8.com/color/96/aquaman.png' },
+    { id: 'heat_vision', name: 'Heat Vision', power: 89, rarity: 'epic', description: "Superman's vision", imageUrl: 'https://img.icons8.com/color/96/superman.png' },
   ],
 };
 
